@@ -23,7 +23,7 @@ const founders = [
   },
   {
     id: "03",
-    name: "Akhay Niwan",
+    name: "Akshay Nirwan",
     philosophy:
       "“We do not merely source surfaces; we curate enduring narratives carved by earth over millennia.”",
     image:

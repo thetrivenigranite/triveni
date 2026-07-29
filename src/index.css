@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/* --- 1. MOVE THIS TO THE VERY TOP OF YOUR index.css FILE --- */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
+
+/* --- 2. THEN FOLLOWED BY TAILWIND DIRECTIVES & YOUR CUSTOM STYLES --- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1A2B78;
+  /* ... rest of your code */
+}
+
 /* ==========================================================================
    TRIVENI DESIGN SYSTEM
    ========================================================================== */
