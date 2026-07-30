@@ -115,7 +115,7 @@ export default function TriveniWhySection() {
           <div className="why-image-reveal lg:col-span-6 w-full flex min-h-[380px] md:min-h-[480px]">
             <div className="relative w-full h-full rounded-[28px] overflow-hidden ">
               <img
-                src="https://ik.imagekit.io/4cj6kauug/Triveni/triveni2022.webp"
+                src="https://res.cloudinary.com/vochf18f/image/upload/v1785387960/triveni2022_aiktgs.png"
                 alt="Triveni Granite Studio"
                 className="w-full h-full object-cover transition-editorial hover:scale-105 duration-700"
                 loading="lazy"

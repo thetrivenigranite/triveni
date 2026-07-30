@@ -14,7 +14,7 @@ const chapters = [
     title: "The foundation was laid.",
     description:
       "A vision to bring exceptional stone craftsmanship to India began in Delhi.",
-    bgImage: "https://ik.imagekit.io/4cj6kauug/Triveni/delhi1989.png",
+    bgImage: "https://res.cloudinary.com/vochf18f/image/upload/v1785387816/delhi1989_dad3ap.png",
   },
   {
     id: "02",
@@ -23,7 +23,7 @@ const chapters = [
     title: "Crossing borders.",
     description:
       "Triveni expanded its reach beyond India, establishing a presence in Nepal.",
-    bgImage: "https://ik.imagekit.io/4cj6kauug/Triveni/nepal",
+    bgImage: "https://res.cloudinary.com/vochf18f/image/upload/v1785387820/nepal_vzhqtq.png",
   },
   {
     id: "03",
@@ -33,7 +33,7 @@ const chapters = [
     description:
       "Abu Road became a strategic hub, connecting craftsmanship with natural resources.",
     bgImage:
-      "https://res.cloudinary.com/x5rakscg/image/upload/v1785233951/WhatsApp_Image_2026-07-28_at_3.36.50_PM_clzbea.jpg",
+      "https://res.cloudinary.com/vochf18f/image/upload/v1785387854/image2_suhgjl.png",
   },
   {
     id: "04",
@@ -42,7 +42,7 @@ const chapters = [
     title: "Expanding the experience.",
     description:
       "A new destination where architects, designers, and homeowners discovered premium stone collections.",
-    bgImage: "https://ik.imagekit.io/4cj6kauug/Triveni/Delhi%202005",
+    bgImage: "https://res.cloudinary.com/vochf18f/image/upload/v1785387945/Delhi_2005_re6av3.png",
   },
   {
     id: "05",
@@ -52,7 +52,7 @@ const chapters = [
     description:
       "A state-of-the-art manufacturing facility strengthened our commitment to quality and innovation.",
     bgImage:
-      "https://res.cloudinary.com/x5rakscg/image/upload/v1785233864/WhatsApp_Image_2026-07-28_at_3.36.51_PM-2_n9c0zv.jpg",
+      "https://res.cloudinary.com/vochf18f/image/upload/v1785387967/image1_jtlz2d.png",
   },
   {
     id: "06",
@@ -61,7 +61,7 @@ const chapters = [
     title: "Bringing luxury closer.",
     description:
       "Expanding into Punjab with a new destination for timeless surfaces and contemporary design.",
-    bgImage: "https://ik.imagekit.io/4cj6kauug/Triveni/triveni2022.webp",
+    bgImage: "https://res.cloudinary.com/vochf18f/image/upload/v1785387960/triveni2022_aiktgs.png",
   },
   {
     id: "07",
@@ -133,7 +133,7 @@ function Hero() {
         <div className="md:col-span-6 relative">
           <div className="hero-image-wrap relative w-full h-[46vh] md:h-[70vh] rounded-editorial overflow-hidden shadow-card">
             <img
-              src="https://res.cloudinary.com/x5rakscg/image/upload/v1785231905/legacy_ero_yll1wl.jpg"
+              src="https://res.cloudinary.com/vochf18f/image/upload/v1785387486/IMG_5064_whlonq.jpg"
               alt="Triveni architectural stonework"
               className="hero-image absolute inset-0 w-full h-[130%] object-cover will-change-transform"
               loading="eager"

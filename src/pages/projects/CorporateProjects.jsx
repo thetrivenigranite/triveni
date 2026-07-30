@@ -16,7 +16,7 @@ const ALL_PROJECTS = [
   { id: 2, title: "Apollo Hospital", category: "corporate", location: "Mohali", material: "Italian Marble & Anti-Skid Granite", image: "https://imgs.search.brave.com/uCwcV5VVu79IWe-2Napam_lAtW0zqu_BkBfZ_WQhzpk/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbS5y/ZWRpZmYuY29tL21v/bmV5LzIwMjMvYXVn/LzI0YXBvbGxvLWhv/c3BpdGFscy5qcGc_/ZnI9bW9uZXk" },
   { id: 3, title: "Netsmartz IT Building", category: "corporate", location: "Mohali", material: "Flamed Granite & Quartz", image: "https://imgs.search.brave.com/tnlYlus6O8UwTzEnDSF7VnxjAmlZDzZ7T1Np48_EFxc/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9mb3Jt/c2Rlc2lnbi5pbi9w/dWJsaWMvc3RvcmFn/ZS9wcm9kdWN0L21h/aW4vMDIwMjIzMDUz/NzUxLTAxLmpwZw" },
   { id: 4, title: "Aerovista", category: "corporate", location: "Mohali", material: "Imported Marble & Natural Quartzite", image: "https://imgs.search.brave.com/rZ5JRUYFR0oQo-cYjSg5UnHZ9kHoPUFcDH30ov_NIYk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9teXBy/b3BlcnRpZXMuY28u/aW4vVGZlM0ZlODlI/bi93cC1jb250ZW50/L3VwbG9hZHMvRHVw/bGV4LWluLWFlcm8t/Y2l0eS1tb2hhbGkt/YWVyb3Zpc3RhLmpw/Zw" },
-  { id: 5, title: "Ramada Encore Hotel", category: "corporate", location: "Zirakpur", material: "Imported Marble & Granite", image: "https://res.cloudinary.com/x5rakscg/image/upload/v1785304242/image_qzbhcx.webp" },
+  { id: 5, title: "Ramada Encore Hotel", category: "corporate", location: "Zirakpur", material: "Imported Marble & Granite", image: "https://res.cloudinary.com/vochf18f/image/upload/v1785406325/884764973_wkcq0o.jpg" },
 
   // Residential (On-site shots)
   { id: 6, title: "Rahul's Residence", category: "residential", location: "Punjab", material: "Custom Italian Marble Cladding", image: "https://res.cloudinary.com/x5rakscg/image/upload/v1785302010/ezgif-frame-027_dnao4l.jpg" },
@@ -100,7 +100,7 @@ export default function ProjectsPage() {
           <div className="lg:col-span-7 relative w-full h-64 sm:h-80 lg:h-[380px] overflow-hidden rounded-editorial-sm order-1 lg:order-2 bg-[var(--bg-soft)]">
             <div className="absolute inset-0 w-full h-full scale-[1.08] group-hover:scale-[1.15] transition-transform duration-700 ease-out">
               <img 
-                src="https://res.cloudinary.com/x5rakscg/image/upload/v1785306305/884764973_zguoch.jpg" 
+                src="https://res.cloudinary.com/vochf18f/image/upload/v1785406325/884764973_wkcq0o.jpg" 
                 alt="Ramada Encore by Wyndham Chandigarh Zirakpur" 
                 className="absolute inset-0 w-full h-full object-cover object-center"
               />

@@ -101,7 +101,7 @@ const STYLES = `
     position: absolute;
     top: 0;
     bottom: 0;
-    width: clamp(60px, 12vw, 160px);
+    width: clamp(80px, 15vw, 200px);
     z-index: 10;
     pointer-events: none;
   }
@@ -111,7 +111,7 @@ const STYLES = `
   .bs-row {
     overflow: hidden;
     width: 100%;
-    padding: 12px 0;
+    padding: 16px 0;
   }
 
   /* Pause on hover — applied to the outer wrap */
@@ -123,7 +123,7 @@ const STYLES = `
     display: flex;
     width: max-content;
     align-items: center;
-    gap: clamp(32px, 5vw, 64px);
+    gap: clamp(28px, 4vw, 48px);
     will-change: transform;
   }
   .bs-marquee--left  { animation: bs-scroll-left  38s linear infinite; }
@@ -138,41 +138,43 @@ const STYLES = `
     to   { transform: translateX(0); }
   }
 
-  /* ── Logo cell ── */
+  /* ── Larger Logo Cell ── */
   .bs-logo-cell {
-    width: 130px;
-    height: 60px;
+    width: clamp(180px, 22vw, 230px);
+    height: clamp(90px, 12vw, 110px);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--bg-card);
     border: 1px solid var(--border-light);
-    border-radius: var(--radius-md);
-    padding: 10px;
+    border-radius: var(--radius-lg, 12px);
+    padding: 16px 24px;
     box-shadow: var(--shadow-soft);
-    filter: grayscale(0.2) opacity(0.7);
-    transition: all var(--transition-fast);
-    cursor: default;
+    filter: grayscale(0.15) opacity(0.85);
+    transition: all var(--transition-fast, 0.25s ease);
+    cursor: pointer;
   }
   .bs-track-wrap:hover .bs-logo-cell:hover {
     filter: grayscale(0) opacity(1);
     border-color: var(--border-medium);
     box-shadow: var(--shadow-card);
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.02);
   }
+
+  /* ── Larger Logo Images ── */
   .bs-logo-cell img {
     max-width: 100%;
-    max-height: 40px;
+    max-height: clamp(55px, 8vw, 75px);
     width: auto;
     height: auto;
     object-fit: contain;
     pointer-events: none;
   }
 
-  /* ── Divider between rows ── */
+  /* ── Gap between rows ── */
   .bs-row-gap {
-    height: 12px;
+    height: 16px;
   }
 
   /* ── Disclaimer ── */

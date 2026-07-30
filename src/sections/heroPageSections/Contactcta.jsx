@@ -1,6 +1,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useNavigate } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,13 +9,13 @@ const contactItems = [
   "Delhi",
   "Abu Road",
   "Dubai",
-  "+91 XXXXX XXXXX",
-  "info@triveni.com",
+  "+91 9953226549",
+  "info@trivenigranite.com",
 ];
 
 export default function TriveniCtaSection() {
   const containerRef = useRef(null);
-
+const nav = useNavigate()
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
@@ -58,7 +59,7 @@ export default function TriveniCtaSection() {
 
         {/* PREMIUM CTA BUTTON */}
         <div className="cta-content-reveal mt-8 mb-10">
-          <button className="inline-flex items-center justify-center bg-[#1D1D1B] text-white px-8 py-3.5 rounded-full font-sans text-[11px] uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:bg-[#2C2C29]">
+          <button onClick={()=>nav("/contact")} className="inline-flex items-center justify-center bg-[#1D1D1B] text-white px-8 py-3.5 rounded-full font-sans text-[11px] uppercase tracking-[0.18em] transition-all duration-500 ease-[cubic-bezier(.22,1,.36,1)] hover:-translate-y-0.5 hover:bg-[#2C2C29]">
             Schedule a Consultation
           </button>
         </div>

@@ -1,49 +1,38 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Albert+Sans:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 
-/* --- 1. MOVE THIS TO THE VERY TOP OF YOUR index.css FILE --- */
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap");
-
-/* --- 2. THEN FOLLOWED BY TAILWIND DIRECTIVES & YOUR CUSTOM STYLES --- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-primary: #1A2B78;
-  /* ... rest of your code */
-}
-
 /* ==========================================================================
    TRIVENI DESIGN SYSTEM
    ========================================================================== */
-
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Albert+Sans:wght@300;400;500;600;700&display=swap");
 
 /* ==========================================================================
    ROOT VARIABLES
    ========================================================================== */
 
 :root {
-
   /* ===========================
      BRAND COLORS
   =========================== */
 
-  --color-primary: #1A2B78;
-  --color-primary-light: #3147A5;
-  --color-primary-dark: #13205D;
+  --color-primary: #1a2b78;
+  --color-primary-light: #3147a5;
+  --color-primary-dark: #13205d;
 
-  --color-accent: #D2492A;
-  --color-accent-light: #E86C4D;
-  --color-accent-dark: #A7351B;
+  --color-accent: #d2492a;
+  --color-accent-light: #e86c4d;
+  --color-accent-dark: #a7351b;
 
   /* ===========================
      BACKGROUNDS
   =========================== */
 
-  --bg-main: #F8F7F3;
-  --bg-soft: #F3F0EA;
-  --bg-card: #FFFFFF;
+  --bg-main: #f8f7f3;
+  --bg-soft: #f3f0ea;
+  --bg-card: #ffffff;
   --bg-dark: #111111;
 
   /* ===========================
@@ -51,35 +40,32 @@
   =========================== */
 
   --text-primary: #161616;
-  --text-secondary: #5F5F5F;
+  --text-secondary: #5f5f5f;
   --text-muted: #888888;
-  --text-white: #FFFFFF;
+  --text-white: #ffffff;
 
   /* ===========================
      BORDERS
   =========================== */
 
-  --border-light: #E8E2D8;
-  --border-medium: #D7D1C7;
+  --border-light: #e8e2d8;
+  --border-medium: #d7d1c7;
 
   /* ===========================
      SHADOWS
   =========================== */
 
-  --shadow-soft:
-    0 4px 20px rgba(0,0,0,.05);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
 
-  --shadow-card:
-    0 12px 40px rgba(0,0,0,.08);
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.08);
 
-  --shadow-hover:
-    0 24px 60px rgba(0,0,0,.12);
+  --shadow-hover: 0 24px 60px rgba(0, 0, 0, 0.12);
 
   /* ===========================
      RADIUS
   =========================== */
 
-  --radius-sm: .75rem;
+  --radius-sm: 0.75rem;
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-xl: 2rem;
@@ -89,257 +75,239 @@
      TRANSITIONS
   =========================== */
 
-  --ease:
-    cubic-bezier(.22,1,.36,1);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-  --transition-fast:
-    250ms var(--ease);
+  --transition-fast: 250ms var(--ease);
 
-  --transition-normal:
-    450ms var(--ease);
+  --transition-normal: 450ms var(--ease);
 
-  --transition-slow:
-    700ms var(--ease);
+  --transition-slow: 700ms var(--ease);
 
   /* ===========================
      TYPOGRAPHY
   =========================== */
 
-  --font-heading:
-    "Cormorant Garamond", serif;
+  --font-heading: "Cormorant Garamond", serif;
 
-  --font-body:
-    "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
 
-  --font-ui:
-    "Plus Jakarta Sans", sans-serif;
+  --font-ui: "Plus Jakarta Sans", sans-serif;
 
-  --font-number:
-    "Albert Sans", sans-serif;
-
+  --font-number: "Albert Sans", sans-serif;
 }
 
 /* ==========================================================================
    BASE
    ========================================================================== */
 
-html{
+html {
   /* Lenis drives smoothing itself — native smooth-scroll fights it and
      causes the janky/stuck feeling. Do not re-enable this. */
 }
 
 /* Lenis recommended base rules */
-html.lenis, html.lenis body{
-  height:auto;
+html.lenis,
+html.lenis body {
+  height: auto;
 }
 
-.lenis.lenis-smooth{
-  scroll-behavior:auto !important;
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
-.lenis.lenis-smooth [data-lenis-prevent]{
-  overscroll-behavior:contain;
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
 }
 
-.lenis.lenis-stopped{
-  overflow:hidden;
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
-.lenis.lenis-scrolling iframe{
-  pointer-events:none;
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
-body{
+body {
+  margin: 0;
 
-  margin:0;
+  background: var(--bg-main);
 
-  background:var(--bg-main);
+  color: var(--text-primary);
 
-  color:var(--text-primary);
+  font-family: var(--font-body);
 
-  font-family:var(--font-body);
+  text-rendering: optimizeLegibility;
 
-  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 
-  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-  -moz-osx-font-smoothing:grayscale;
-
-  overflow-x:hidden;
-
+  overflow-x: hidden;
 }
 
 /* ==========================================================================
    SELECTION
    ========================================================================== */
 
-::selection{
+::selection {
+  background: var(--color-accent);
 
-  background:var(--color-accent);
-
-  color:white;
-
+  color: white;
 }
 
 /* ==========================================================================
    SCROLLBAR
    ========================================================================== */
 
-::-webkit-scrollbar{
-  width:10px;
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-::-webkit-scrollbar-track{
-  background:var(--bg-soft);
+::-webkit-scrollbar-track {
+  background: var(--bg-soft);
 }
 
-::-webkit-scrollbar-thumb{
-  background:var(--color-primary);
-  border-radius:999px;
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover{
-  background:var(--color-accent);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
 }
 
 /* ==========================================================================
    IMAGES
    ========================================================================== */
 
-img{
+img {
+  display: block;
 
-  display:block;
+  max-width: 100%;
 
-  max-width:100%;
-
-  height:auto;
-
+  height: auto;
 }
 
 /* ==========================================================================
    LINKS
    ========================================================================== */
 
-a{
+a {
+  color: inherit;
 
-  color:inherit;
+  text-decoration: none;
 
-  text-decoration:none;
-
-  transition:var(--transition-fast);
-
+  transition: var(--transition-fast);
 }
 
 /* ==========================================================================
    UTILITIES
    ========================================================================== */
 
-@layer utilities{
-
+@layer utilities {
   /* Fonts */
 
-  .font-heading{
-    font-family:var(--font-heading);
+  .font-heading {
+    font-family: var(--font-heading);
   }
 
-  .font-body{
-    font-family:var(--font-body);
+  .font-body {
+    font-family: var(--font-body);
   }
 
-  .font-ui{
-    font-family:var(--font-ui);
+  .font-ui {
+    font-family: var(--font-ui);
   }
 
-  .font-number{
-    font-family:var(--font-number);
+  .font-number {
+    font-family: var(--font-number);
   }
 
   /* Colors */
 
-  .bg-brand{
-    background:var(--bg-main);
+  .bg-brand {
+    background: var(--bg-main);
   }
 
-  .bg-soft{
-    background:var(--bg-soft);
+  .bg-soft {
+    background: var(--bg-soft);
   }
 
-  .bg-card{
-    background:var(--bg-card);
+  .bg-card {
+    background: var(--bg-card);
   }
 
-  .bg-primary{
-    background:var(--color-primary);
+  .bg-primary {
+    background: var(--color-primary);
   }
 
-  .bg-accent{
-    background:var(--color-accent);
+  .bg-accent {
+    background: var(--color-accent);
   }
 
-  .text-primary{
-    color:var(--text-primary);
+  .text-primary {
+    color: var(--text-primary);
   }
 
-  .text-secondary{
-    color:var(--text-secondary);
+  .text-secondary {
+    color: var(--text-secondary);
   }
 
-  .text-muted{
-    color:var(--text-muted);
+  .text-muted {
+    color: var(--text-muted);
   }
 
-  .text-brand{
-    color:var(--color-primary);
+  .text-brand {
+    color: var(--color-primary);
   }
 
-  .text-accent{
-    color:var(--color-accent);
+  .text-accent {
+    color: var(--color-accent);
   }
 
-  .text-inverse{
-    color:var(--text-white);
+  .text-inverse {
+    color: var(--text-white);
   }
 
-  .border-brand{
-    border-color:var(--border-light);
+  .border-brand {
+    border-color: var(--border-light);
   }
 
-  .border-brand-medium{
-    border-color:var(--border-medium);
+  .border-brand-medium {
+    border-color: var(--border-medium);
   }
 
   /* Shadows */
 
-  .shadow-soft{
-    box-shadow:var(--shadow-soft);
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
   }
 
-  .shadow-card{
-    box-shadow:var(--shadow-card);
+  .shadow-card {
+    box-shadow: var(--shadow-card);
   }
 
-  .shadow-hover{
-    box-shadow:var(--shadow-hover);
+  .shadow-hover {
+    box-shadow: var(--shadow-hover);
   }
 
   /* Radius */
 
-  .rounded-editorial{
-    border-radius:var(--radius-xl);
+  .rounded-editorial {
+    border-radius: var(--radius-xl);
   }
 
-  .rounded-editorial-lg{
-    border-radius:var(--radius-2xl);
+  .rounded-editorial-lg {
+    border-radius: var(--radius-2xl);
   }
 
-  .rounded-editorial-sm{
-    border-radius:var(--radius-md);
+  .rounded-editorial-sm {
+    border-radius: var(--radius-md);
   }
 
   /* Transition */
 
-  .transition-editorial{
-    transition:all var(--transition-normal);
+  .transition-editorial {
+    transition: all var(--transition-normal);
   }
-
 }

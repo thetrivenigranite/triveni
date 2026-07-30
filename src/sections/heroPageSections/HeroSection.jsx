@@ -11,7 +11,7 @@ export default function DesktopCanvas() {
   const videoRef = useRef(null);
   const mediaWrapperRef = useRef(null);
 
-  // Typography container reference for a clean collective slide-out to the left
+  // Typography container reference for cleanup/animation
   const textContainerRef = useRef(null);
 
   // Typography references for entrance and scrubbed sequences
@@ -63,9 +63,13 @@ export default function DesktopCanvas() {
         },
       });
 
+      // Responsive slide distance: full window width on mobile, percentage on desktop
+      const isMobile = window.innerWidth < 768;
+      const slideDistance = isMobile ? window.innerWidth * 1.1 : window.innerWidth * 0.8;
+
       // Slide text horizontally to the left out of the screen dynamically on scroll
       tl.to(textContainerRef.current, {
-        x: -window.innerWidth * 0.8,
+        x: -slideDistance,
         ease: "power1.inOut",
       }, 0);
 
@@ -139,12 +143,11 @@ export default function DesktopCanvas() {
         {/* --- HIGH-END TYPOGRAPHY OVERLAY LAYER --- */}
         <div
           ref={textContainerRef}
-          className="absolute z-20 pointer-events-none will-change-transform"
-          style={{ left: "8%", top: "24%", maxWidth: "550px" }}
+          className="absolute z-20 pointer-events-none will-change-transform w-[85%] max-w-[550px] left-[7%] md:left-[8%] top-[28%] md:top-[24%]"
         >
           <p
             ref={eyebrowRef}
-            className="font-ui text-xs uppercase tracking-[0.5em] text-[var(--color-accent)] mb-4 font-medium opacity-0"
+            className="font-ui text-[10px] md:text-xs uppercase tracking-[0.4em] md:tracking-[0.5em] text-[var(--color-accent)] mb-3 md:mb-4 font-medium opacity-0"
             style={{ willChange: "transform, opacity, filter, letter-spacing" }}
           >
             Crafting Spaces
@@ -152,7 +155,7 @@ export default function DesktopCanvas() {
 
           <h1
             ref={titleRef}
-            className="font-heading font-light text-6xl md:text-[76px] leading-[1.05] tracking-[0.06em] text-[var(--text-primary)] mb-5 opacity-0 text-white"
+            className="font-heading font-light text-4xl sm:text-5xl md:text-[76px] leading-[1.1] md:leading-[1.05] tracking-[0.04em] md:tracking-[0.06em] text-white mb-4 md:mb-5 opacity-0"
             style={{ willChange: "transform, opacity, filter" }}
           >
             Since 1989
@@ -160,13 +163,13 @@ export default function DesktopCanvas() {
 
           <div
             ref={lineRef}
-            className="h-[1px] bg-[var(--color-accent)] mb-5 opacity-0"
+            className="h-[1px] bg-[var(--color-accent)] mb-4 md:mb-5 opacity-0"
             style={{ width: "0px", willChange: "width, opacity" }}
           />
 
           <p
             ref={subtitleRef}
-            className="font-heading italic text-lg md:text-xl text-[var(--color-accent)] tracking-[0.1em] m-0 opacity-0"
+            className="font-heading italic text-base md:text-xl text-[var(--color-accent)] tracking-[0.08em] md:tracking-[0.1em] m-0 opacity-0"
             style={{ willChange: "transform, opacity, filter" }}
           >
             Across India, &amp; Nepal &amp; UAE

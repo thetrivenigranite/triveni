@@ -79,7 +79,7 @@ export default function TriveniShowcaseSection() {
           {/* LEFT CARD: SIGNATURE PROJECTS (60%) */}
           <div className="showcase-card flex-[60%] relative min-h-[420px] md:min-h-[480px] lg:min-h-[520px] rounded-editorial overflow-hidden group cursor-pointer bg-dark shadow-card">
             <img
-              src="https://res.cloudinary.com/x5rakscg/image/upload/v1785236706/VISTA_LAND_qchfmv.png"
+              src="https://res.cloudinary.com/vochf18f/image/upload/v1785388015/VISTA_LAND_dnzq3p.png"
               alt="Signature Projects"
               className="absolute inset-0 w-full h-full object-cover transition-editorial group-hover:scale-105 opacity-90"
               loading="lazy"

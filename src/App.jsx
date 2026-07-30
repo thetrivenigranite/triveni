@@ -17,15 +17,18 @@ import BathTub from "./pages/products/BathTub";
 import WallMurals from "./pages/products/WallMurals";
 import MarbleArtifacts from "./pages/products/MarbleArtifacts";
 import MarbleFountain from "./pages/products/MarbleFountain";
+import PrivacyPolicy from "./pages/LegalPrivacy";
+import LegalPrivacy from "./pages/LegalPrivacy";
+import LegalTerms from "./pages/LegalTerms";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
-const Projects = lazy(() => import("./pages/ProjectsSection"));
-const Collections = lazy(() => import("./pages/Collections"));
+const Projects = lazy(() => import("./pages/projects/CorporateProjects"));
+const Collections = lazy(() => import("./pages/HomePage"));
 const Blogs = lazy(() => import("./pages/Blogs"));
 const Contact = lazy(() => import("./pages/Contact"));
-const BookConsultation = lazy(() => import("./pages/BookConsultation"));
+const BookConsultation = lazy(() => import("./pages/Contact"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
-const Legacy = lazy(() => import("./pages/Legacy"));
+const Legacy = lazy(() => import("./pages/HomePage"));
 const CorporateProjects = lazy(
   () => import("./pages/projects/CorporateProjects"),
 );
@@ -78,10 +81,6 @@ function App() {
               <Route path="/book-consultation" element={<BookConsultation />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/legacy" element={<Legacy />} />
-
-              
-              
-
               <Route path="/granite" element={<Granite />} />
               <Route path="/sandstone" element={<Sandstone />} />
               <Route path="/limestone" element={<Limestone />} />
@@ -103,6 +102,8 @@ function App() {
               <Route path="/wall-murals" element={<WallMurals />} />
               <Route path="/marble-artifacts" element={<MarbleArtifacts />} />
               <Route path="/marble-fountain" element={<MarbleFountain />} />
+              <Route path="/privacy" element={<LegalPrivacy />} />
+              <Route path="/legal-terms" element={<LegalTerms />} />
             </Routes>
           </Suspense>
         </ErrorBoundary>

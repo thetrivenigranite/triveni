@@ -253,7 +253,7 @@ const AboutHero = () => {
 
             <div className="kinetic-canvas relative">
               <img 
-                src="https://res.cloudinary.com/x5rakscg/image/upload/v1785231905/legacy_ero_yll1wl.jpg" 
+                src="https://res.cloudinary.com/vochf18f/image/upload/v1785387486/IMG_5064_whlonq.jpg" 
                 alt="Premium architectural marble showroom interior" 
                 className="kinetic-image"
                 loading="eager"
