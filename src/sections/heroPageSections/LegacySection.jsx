@@ -71,7 +71,7 @@ const chapters = [
     description:
       "Triveni enters Dubai, marking a new chapter in its international journey.",
     bgImage:
-      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1920&q=80",
+      "https://res.cloudinary.com/vochf18f/image/upload/v1785559885/trivenidubai_iiqfw0.png",
   },
 ];
 
