@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import heroScroledVideo from "../../assets/riteshworkkk-web1.mp4";
+// Note: Make sure to point this to the "optimized-hero.mp4" you generated with FFmpeg
+import heroScroledVideo from "../../assets/optimized-hero.mp4"; 
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -20,9 +21,30 @@ export default function DesktopCanvas() {
   const lineRef = useRef(null);
   const subtitleRef = useRef(null);
 
+  // --- STATE FOR OPTIMIZED VIDEO LOADING ---
+  const [videoSrc, setVideoSrc] = useState(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  // 1. Fetch the video as a Blob to store it in memory for lag-free scrubbing
+  useEffect(() => {
+    fetch(heroScroledVideo)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = URL.createObjectURL(blob);
+        setVideoSrc(url);
+      })
+      .catch((err) => console.error("Error fetching video blob:", err));
+
+    return () => {
+      // Cleanup the blob URL to prevent memory leaks
+      if (videoSrc) URL.revokeObjectURL(videoSrc);
+    };
+  }, []);
+
+  // 2. Initialize GSAP only AFTER the video is loaded in memory
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !isVideoLoaded) return;
 
     video.pause();
     video.currentTime = 0;
@@ -36,7 +58,7 @@ export default function DesktopCanvas() {
       let currentTime = 0;
       let rafId = null;
 
-      // --- 1. INITIAL MOUNT ENTRANCE ANIMATION ---
+      // --- INITIAL MOUNT ENTRANCE ANIMATION ---
       const entranceTl = gsap.timeline({ defaults: { ease: "power3.out" } });
       
       entranceTl
@@ -46,7 +68,7 @@ export default function DesktopCanvas() {
         .fromTo(lineRef.current, { width: "0px", opacity: 0 }, { width: "80px", opacity: 1, duration: 0.7 }, "-=0.5")
         .fromTo(subtitleRef.current, { opacity: 0, y: 20, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8 }, "-=0.5");
 
-      // --- 2. MASTER SCROLL-DRIVEN GSAP ANIMATION ---
+      // --- MASTER SCROLL-DRIVEN GSAP ANIMATION ---
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
@@ -113,7 +135,7 @@ export default function DesktopCanvas() {
       ctx.revert();
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, []);
+  }, [isVideoLoaded]); // Dependency array now waits for isVideoLoaded to be true
 
   return (
     <div ref={containerRef} className="w-full bg-[var(--bg-main)]">
@@ -132,8 +154,9 @@ export default function DesktopCanvas() {
         >
           <video
             ref={videoRef}
-            src={heroScroledVideo}
-            preload="metadata"
+            src={videoSrc || ""} // Use the loaded Blob URL here
+            onLoadedMetadata={() => setIsVideoLoaded(true)} // Tell GSAP it's ready
+            preload="auto"
             muted
             playsInline
             className="w-full h-full object-cover pointer-events-none select-none"
