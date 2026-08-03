@@ -16,6 +16,7 @@ const footerColumns = [
     title: "Surfaces",
     links: [
       { label: "Natural Stone", to: "/granite" },
+
       { label: "Flooring", to: "/wooden-flooring" },
       { label: "Cladding", to: "/i-clad" },
     ],
