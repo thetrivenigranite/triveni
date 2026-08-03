@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import heroScroledVideo from "../../assets/riteshworkkk-web.mp4";
+import heroScroledVideo from "../../assets/riteshworkkk-web1.mp4";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -133,7 +133,7 @@ export default function DesktopCanvas() {
           <video
             ref={videoRef}
             src={heroScroledVideo}
-            preload="auto"
+            preload="metadata"
             muted
             playsInline
             className="w-full h-full object-cover pointer-events-none select-none"

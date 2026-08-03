@@ -41,7 +41,6 @@ const NAV_LINKS = [
       {
         title: "Tiles",
         items: [
-          { label: "Dimore", href: "/dimore" },
           { label: "Ispira", href: "/ispira" },
           { label: "Arvia", href: "/arvia" },
           { label: "Marfil", href: "/marfil" },

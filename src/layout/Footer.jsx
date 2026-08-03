@@ -23,7 +23,6 @@ const footerColumns = [
   {
     title: "Tiles",
     links: [
-      { label: "Dimore", to: "/dimore" },
       { label: "Ispira", to: "/ispira" },
       { label: "Arvia", to: "/arvia" },
       { label: "Marfil", to: "/marfil" },
