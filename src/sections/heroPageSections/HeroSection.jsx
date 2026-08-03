@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 // Note: Make sure to point this to the "optimized-hero.mp4" you generated with FFmpeg
-import heroScroledVideo from "../../assets/optimized-hero.mp4"; 
+import heroScroledVideo from "../../assets/riteshworkkk-web1.mp4"; 
 
 gsap.registerPlugin(ScrollTrigger);
 
