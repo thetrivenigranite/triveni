@@ -15,7 +15,7 @@ export default function DesktopCanvas() {
   const eyebrowRef = useRef(null);
   const titleRef = useRef(null);
   const lineRef = useRef(null);
-  const subtitleRef = useRef(null);
+  const subtitleRef = useRef(null);   
 
   const [videoSrc, setVideoSrc] = useState(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
