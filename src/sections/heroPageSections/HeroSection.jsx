@@ -14,7 +14,7 @@ ScrollTrigger.config({ ignoreMobileResize: true });
  * If you're on webpack/CRA instead of Vite, tell me and I'll swap
  * this for require.context — the rest of the component is unaffected.
  * ------------------------------------------------------------------ */
-const frameModules = import.meta.glob("../../assets/hero-frames/*.png", {
+const frameModules = import.meta.glob("../../assets/hero-frames/*.avif", {
   eager: true,
   as: "url",
 });
