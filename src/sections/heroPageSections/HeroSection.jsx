@@ -14,18 +14,14 @@ ScrollTrigger.config({ ignoreMobileResize: true });
  * If you're on webpack/CRA instead of Vite, tell me and I'll swap
  * this for require.context — the rest of the component is unaffected.
  * ------------------------------------------------------------------ */
-const frameModules = import.meta.glob(
-  "../../assets/hero-frames/*.avif",
-  {
-    eager: true,
-    import: "default",
-  }
-);
-const FRAME_URLS = Object.values(frameModules).sort();
-console.log("FRAME MODULES:", frameModules);
-console.log("FRAME COUNT:", Object.keys(frameModules).length);
-console.log("FRAME URLS:", FRAME_URLS);
-console.log("DEVICE:", getDeviceProfile());
+const frameModules = import.meta.glob("../../assets/hero-frames/*.avif", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+const FRAME_URLS = Object.keys(frameModules)
+  .sort()
+  .map((key) => frameModules[key]);
 
 /* ------------------------------------------------------------------
  * DEVICE PROFILE
@@ -65,16 +61,29 @@ function useFramePreloader(urls, active) {
 
     urls.forEach((url, i) => {
       const img = new Image();
-      img.decoding = "async";
-      const onDone = () => {
+      const finish = () => {
         if (cancelled) return;
         imagesRef.current[i] = img;
         count += 1;
         setLoadedCount(count);
       };
-      img.onload = onDone;
-      img.onerror = onDone; // don't block the loader forever on one bad frame
       img.src = url;
+      // FIX: img.onload only means the bytes downloaded — the browser
+      // is still allowed to defer the actual pixel decode until the
+      // first time the image is painted, which is exactly the kind of
+      // stutter that shows up as "a little laggy" right as a new frame
+      // is needed. img.decode() forces that decode to happen NOW, off
+      // the main thread, during preload — so every frame is already
+      // fully decoded and sitting in memory before scroll ever asks
+      // for it. This matters a lot more on AVIF than WebP/JPEG: AVIF's
+      // decode cost per frame is noticeably higher on most phone
+      // CPUs/GPUs, so skipping this step hurts more there.
+      if (img.decode) {
+        img.decode().then(finish).catch(finish); // .catch: still show frame even if decode() unsupported/fails
+      } else {
+        img.onload = finish;
+        img.onerror = finish;
+      }
     });
 
     return () => {
@@ -163,6 +172,22 @@ export default function ScrollHero() {
   // ---- MOBILE: wait for every frame to be decoded before reveal ----
   useEffect(() => {
     if (!device.isMobile) return;
+
+    // FIX: if the frame folder is empty/misnamed/wrong path, `total`
+    // is 0 and the "loadedCount >= total" check below would never be
+    // what unblocks the page (it'd just never run) — that's exactly
+    // what produces a page that looks permanently stuck on the loader.
+    // Fail loudly and unblock instead of hanging forever.
+    if (FRAME_URLS.length === 0) {
+      console.error(
+        "[ScrollHero] No frame images found at ../../assets/hero-frames/*.webp — " +
+          "check the folder exists, the filenames end in .webp, and the relative " +
+          "path from this file is correct. Unblocking the page without a hero visual."
+      );
+      setIsReady(true);
+      return;
+    }
+
     if (total > 0 && loadedCount >= total) setIsReady(true);
   }, [device.isMobile, loadedCount, total]);
 
@@ -273,7 +298,12 @@ export default function ScrollHero() {
             trigger: containerRef.current,
             start: "top top",
             end: "+=400%",
-            scrub: isMobile ? 0.35 : 0.15,
+            // FIX: 0.35 was tuned to throttle expensive video seeks.
+            // Canvas draws are near-free, so that easing delay no
+            // longer buys anything — it just adds lag between the
+            // finger and the frame. Mobile can now track scroll about
+            // as tightly as desktop.
+            scrub: isMobile ? 0.15 : 0.15,
             pin: pinTargetRef.current,
             pinSpacing: true,
             anticipatePin: 1,
