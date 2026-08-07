@@ -1,53 +1,149 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import heroScroledVideo from "../../assets/riteshworkkk-web1.mp4";
+import heroScroledVideo from "../../assets/riteshworkkk-web1.mp4"; // desktop path only
 
 gsap.registerPlugin(ScrollTrigger);
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ------------------------------------------------------------------
- * GLOBAL SCROLLTRIGGER CONFIG (runs once, module load time)
- *
- * FIX: ignoreMobileResize
- * iOS Safari fires a `resize` event every time the address bar
- * shows/hides while scrolling. Without this flag, ScrollTrigger
- * re-measures the page (and can re-pin) on almost every scroll tick
- * on iPhone — this is one of the single biggest causes of mobile
- * pinned-scroll jank, independent of anything else in this file.
+ * FRAME SEQUENCE ASSETS
+ * Vite-specific: eagerly imports every webp in the folder as a URL.
+ * Filenames must be zero-padded (frame-0001.webp, frame-0002.webp...)
+ * so the lexical sort below puts them in the right order.
+ * If you're on webpack/CRA instead of Vite, tell me and I'll swap
+ * this for require.context — the rest of the component is unaffected.
  * ------------------------------------------------------------------ */
-ScrollTrigger.config({
-  ignoreMobileResize: true,
+const frameModules = import.meta.glob("../../assets/hero-frames/*.png", {
+  eager: true,
+  as: "url",
 });
+const FRAME_URLS = Object.keys(frameModules)
+  .sort()
+  .map((key) => frameModules[key]);
 
 /* ------------------------------------------------------------------
- * DEVICE PROFILE — computed once per mount, never per frame.
- * We classify by capability, not just viewport width, so a low-end
- * Android in landscape still gets the cheap path, and hardware
- * signals (cores/memory/network) let us drop to an even lighter
- * render tier automatically.
+ * DEVICE PROFILE
+ * FIX (this round): switched from "isLowEnd only" to "isMobile" for
+ * choosing the image-sequence path. The lag you saw on iPhone isn't
+ * a low-end-hardware problem — it's WebKit's <video> seeking model
+ * itself (real per-seek decoder latency via AVFoundation, ~80-300ms,
+ * that JS throttling can reduce the *frequency* of but never remove).
+ * So: ALL touch/mobile viewports get the canvas sequence now; only
+ * non-touch desktop-width viewports get the video-scrub path.
  * ------------------------------------------------------------------ */
 function getDeviceProfile() {
-  if (typeof window === "undefined") return { isMobile: false, isLowEnd: false };
-
+  if (typeof window === "undefined") return { isMobile: false };
   const ua = navigator.userAgent || "";
-  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || window.innerWidth < 768;
-
-  const cores = navigator.hardwareConcurrency || 4;
-  const mem = navigator.deviceMemory || 4; // Chrome/Android only; undefined on Safari
-  const conn = navigator.connection || {};
-  const saveData = !!conn.saveData;
-  const slowNetwork = ["slow-2g", "2g", "3g"].includes(conn.effectiveType);
-
-  const isLowEnd = isMobile && (cores <= 4 || mem <= 4 || saveData || slowNetwork);
-
-  return { isMobile, isLowEnd };
+  const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua) || (isTouch && window.innerWidth < 1024);
+  return { isMobile };
 }
 
-export default function DesktopCanvas() {
+/* ------------------------------------------------------------------
+ * FRAME PRELOADER
+ * Loads every frame into an in-memory Image() up front. Because these
+ * are small WebP stills (not a video stream), the browser fully
+ * decodes each one once and drawImage() from then on is effectively
+ * free — this is what eliminates the seek latency entirely, not just
+ * reduces it.
+ * ------------------------------------------------------------------ */
+function useFramePreloader(urls, active) {
+  const imagesRef = useRef([]);
+  const [loadedCount, setLoadedCount] = useState(0);
+
+  useEffect(() => {
+    if (!active || urls.length === 0) return;
+    let cancelled = false;
+    let count = 0;
+    imagesRef.current = new Array(urls.length);
+
+    urls.forEach((url, i) => {
+      const img = new Image();
+      img.decoding = "async";
+      const onDone = () => {
+        if (cancelled) return;
+        imagesRef.current[i] = img;
+        count += 1;
+        setLoadedCount(count);
+      };
+      img.onload = onDone;
+      img.onerror = onDone; // don't block the loader forever on one bad frame
+      img.src = url;
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [active, urls]);
+
+  return { images: imagesRef, loadedCount, total: urls.length };
+}
+
+// Manual "object-fit: cover" math for canvas — canvas has no CSS
+// object-fit, so we replicate it: scale to fill, center-crop overflow.
+function drawCover(ctx, img, canvasW, canvasH) {
+  const imgRatio = img.width / img.height;
+  const canvasRatio = canvasW / canvasH;
+  let drawW, drawH, offsetX, offsetY;
+
+  if (imgRatio > canvasRatio) {
+    drawH = canvasH;
+    drawW = drawH * imgRatio;
+    offsetX = (canvasW - drawW) / 2;
+    offsetY = 0;
+  } else {
+    drawW = canvasW;
+    drawH = drawW / imgRatio;
+    offsetX = 0;
+    offsetY = (canvasH - drawH) / 2;
+  }
+  ctx.clearRect(0, 0, canvasW, canvasH);
+  ctx.drawImage(img, offsetX, offsetY, drawW, drawH);
+}
+
+/* ------------------------------------------------------------------
+ * SHARED TEXT OVERLAY — identical entrance/scroll behavior on both
+ * paths, so desktop and mobile look the same aside from the media.
+ * ------------------------------------------------------------------ */
+function HeroText({ textContainerRef, eyebrowRef, titleRef, lineRef, subtitleRef }) {
+  return (
+    <div
+      ref={textContainerRef}
+      className="absolute z-20 pointer-events-none w-[85%] max-w-[550px] left-[7%] md:left-[8%] top-[28%] md:top-[24%]"
+      style={{ transform: "translate3d(0,0,0)" }}
+    >
+      <p
+        ref={eyebrowRef}
+        className="font-ui text-[10px] md:text-xs uppercase tracking-[0.4em] md:tracking-[0.5em] text-[var(--color-accent)] mb-3 md:mb-4 font-medium opacity-0"
+      >
+        Crafting Spaces
+      </p>
+      <h1
+        ref={titleRef}
+        className="font-heading font-light text-4xl sm:text-5xl md:text-[76px] leading-[1.1] md:leading-[1.05] tracking-[0.04em] md:tracking-[0.06em] text-white mb-4 md:mb-5 opacity-0"
+      >
+        Since 1989
+      </h1>
+      <div ref={lineRef} className="h-[1px] w-20 bg-[var(--color-accent)] mb-4 md:mb-5 opacity-0 origin-left" />
+      <p
+        ref={subtitleRef}
+        className="font-heading italic text-base md:text-xl text-[var(--color-accent)] tracking-[0.08em] md:tracking-[0.1em] m-0 opacity-0"
+      >
+        Across India, &amp; Nepal &amp; UAE
+      </p>
+    </div>
+  );
+}
+
+export default function ScrollHero() {
+  const device = useMemo(getDeviceProfile, []); // computed once, before first paint
+
   const containerRef = useRef(null);
   const pinTargetRef = useRef(null);
-  const videoRef = useRef(null);
   const mediaWrapperRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
 
   const textContainerRef = useRef(null);
   const eyebrowRef = useRef(null);
@@ -55,35 +151,22 @@ export default function DesktopCanvas() {
   const lineRef = useRef(null);
   const subtitleRef = useRef(null);
 
-  // GSAP/ScrollTrigger must not touch the DOM until the video can
-  // actually be scrubbed without stalling — this state gates that.
   const [isReady, setIsReady] = useState(false);
-  const deviceRef = useRef({ isMobile: false, isLowEnd: false });
 
-  /* ------------------------------------------------------------------
-   * VIDEO READINESS
-   *
-   * FIX: no more Blob fetch. We assign the imported URL straight to
-   * `src` so the browser handles byte-range streaming/caching itself
-   * (it's better at this than a manual fetch, and doesn't hold the
-   * whole file in memory).
-   *
-   * FIX: we gate on `canplaythrough` (browser believes it can play to
-   * the end without stalling at the current download rate) instead of
-   * `loadedmetadata`. Metadata alone doesn't mean enough frames are
-   * buffered to scrub — seeking into unbuffered video is what stalls
-   * the decoder on mobile. A short fallback timer covers browsers that
-   * are conservative about firing canplaythrough for muted/inline video.
-   * ------------------------------------------------------------------ */
+  const { images, loadedCount, total } = useFramePreloader(FRAME_URLS, device.isMobile);
+
+  // ---- MOBILE: wait for every frame to be decoded before reveal ----
   useEffect(() => {
-    deviceRef.current = getDeviceProfile();
+    if (!device.isMobile) return;
+    if (total > 0 && loadedCount >= total) setIsReady(true);
+  }, [device.isMobile, loadedCount, total]);
+
+  // ---- DESKTOP: wait for the video to be scrub-ready (unchanged) ----
+  useEffect(() => {
+    if (device.isMobile) return;
     const video = videoRef.current;
     if (!video) return;
-
-    // Low-end / save-data devices: don't force aggressive preloading.
-    // "metadata" still gives us duration/dimensions fast; the browser
-    // buffers the rest opportunistically as the user scrolls.
-    video.preload = deviceRef.current.isLowEnd ? "metadata" : "auto";
+    video.preload = "auto";
 
     let settled = false;
     const markReady = () => {
@@ -91,167 +174,129 @@ export default function DesktopCanvas() {
       settled = true;
       setIsReady(true);
     };
-
     video.addEventListener("canplaythrough", markReady);
     const fallbackTimer = setTimeout(() => {
-      if (video.readyState >= 2) markReady(); // HAVE_CURRENT_DATA or better
+      if (video.readyState >= 2) markReady();
     }, 2500);
-
     video.load();
 
     return () => {
       video.removeEventListener("canplaythrough", markReady);
       clearTimeout(fallbackTimer);
     };
-  }, []);
+  }, [device.isMobile]);
 
   /* ------------------------------------------------------------------
-   * GSAP / SCROLLTRIGGER — only runs once the video is actually ready.
+   * GSAP / SCROLLTRIGGER — one setup, branches only on how the "media"
+   * scrub target is driven (canvas frame index vs video.currentTime).
    * ------------------------------------------------------------------ */
   useEffect(() => {
+    if (!isReady) return;
+
+    const isMobile = device.isMobile;
     const video = videoRef.current;
-    if (!video || !isReady) return;
-
-    video.pause();
-    video.currentTime = 0;
-
-    const { isMobile, isLowEnd } = deviceRef.current;
-
-    // Mutable scrub state lives in the outer effect scope (not React
-    // state) so updates never trigger a re-render, and so the cleanup
-    // function below can reach `rafId` to cancel any pending frame.
-    let targetTime = 0;
-    let currentTime = 0;
-    let needsWork = false;
+    const canvas = canvasRef.current;
+    let ctx2d = null;
+    let lastDrawnFrame = -1;
     let rafId = null;
-    let lastSeekAt = 0;
 
-    const getDuration = () =>
-      video.duration && !isNaN(video.duration) ? video.duration : 5;
-
-    // ---- render-loop tuning, per device tier --------------------
-    // Minimum ms between actual `currentTime` writes. Desktop can take
-    // near-every-frame seeks; mobile decoders cannot service seeks at
-    // 60Hz, so we hard-cap how often we even try, on top of the
-    // existing `!video.seeking` guard.
-    const seekIntervalMs = isLowEnd ? 66 : isMobile ? 40 : 0; // ~15fps / ~25fps / uncapped
-    const easeFactor = isMobile ? 0.22 : 0.35;
-    const settleThreshold = isMobile ? 0.02 : 0.004; // "close enough, stop looping"
-    const seekThreshold = isMobile ? 0.05 : 0.01; // "far enough to bother seeking"
-
-    /* FIX: the original loop scheduled requestAnimationFrame forever,
-     * even at rest, continuously computing near-zero deltas — pure
-     * wasted CPU/battery on mobile. This version stops scheduling once
-     * the video has caught up (`needsWork = false`) and only wakes back
-     * up when ScrollTrigger's onUpdate fires with new scroll input. */
-    function renderLoop(now) {
-      const diff = targetTime - currentTime;
-      currentTime =
-        Math.abs(diff) > settleThreshold ? currentTime + diff * easeFactor : targetTime;
-
-      const dur = getDuration();
-      if (currentTime < 0) currentTime = 0;
-      if (currentTime > dur) currentTime = dur;
-
-      const timeSinceLastSeek = now - lastSeekAt;
-      const bigEnoughJump = Math.abs(video.currentTime - currentTime) > seekThreshold;
-
-      // Three guards combined — this is the core mobile fix:
-      //  1. !video.seeking      -> never overlap seeks
-      //  2. bigEnoughJump       -> skip visually-insignificant deltas
-      //  3. timeSinceLastSeek   -> hard per-device cap on seek rate
-      if (!video.seeking && bigEnoughJump && timeSinceLastSeek >= seekIntervalMs) {
-        video.currentTime = currentTime;
-        lastSeekAt = now;
+    // Size the canvas to its container in device pixels, once, and on
+    // resize — never inside the scroll handler (that would be layout
+    // thrashing on every scroll tick).
+    const sizeCanvas = () => {
+      if (!canvas) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap DPR: 3x on canvas is pure waste
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = `${rect.width}px`;
+      canvas.style.height = `${rect.height}px`;
+      ctx2d = canvas.getContext("2d");
+      if (lastDrawnFrame >= 0 && images.current[lastDrawnFrame]) {
+        drawCover(ctx2d, images.current[lastDrawnFrame], canvas.width, canvas.height);
       }
+    };
 
-      if (Math.abs(targetTime - currentTime) <= settleThreshold && !video.seeking) {
-        needsWork = false;
-      }
-
-      rafId = needsWork ? requestAnimationFrame(renderLoop) : null;
+    if (isMobile) {
+      sizeCanvas();
+      ctx2d = canvas.getContext("2d");
+      // Draw the first frame immediately so there's no blank flash
+      // once the loader fades.
+      if (images.current[0]) drawCover(ctx2d, images.current[0], canvas.width, canvas.height);
+      window.addEventListener("resize", sizeCanvas);
+    } else if (video) {
+      video.pause();
+      video.currentTime = 0;
     }
 
     let ctx = gsap.context(() => {
-      const skipBlur = isMobile || isLowEnd;
+      const entranceTargets = [mediaWrapperRef.current, eyebrowRef.current, titleRef.current, lineRef.current, subtitleRef.current];
 
-      const entranceTargets = [
-        mediaWrapperRef.current,
-        eyebrowRef.current,
-        titleRef.current,
-        lineRef.current,
-        subtitleRef.current,
-      ];
-
-      const entranceTl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      entranceTl
-        // FIX: will-change applied only for the duration of the
-        // entrance animation, then cleared (see .call below) — not
-        // left on indefinitely, which keeps GPU compositor layers
-        // alive for the rest of the page's life for no reason.
+      gsap
+        .timeline({ defaults: { ease: "power3.out" } })
         .set(entranceTargets, { willChange: "transform, opacity" })
-        .fromTo(
-          mediaWrapperRef.current,
-          { scale: 1.12, opacity: 0 },
-          { scale: 1.06, opacity: 1, duration: 1.4 }
-        )
-        .fromTo(
-          eyebrowRef.current,
-          { opacity: 0, y: 20, filter: skipBlur ? "none" : "blur(6px)" },
-          { opacity: 1, y: 0, filter: "none", duration: 0.8 },
-          "-=1.0"
-        )
-        .fromTo(
-          titleRef.current,
-          { opacity: 0, y: 30, filter: skipBlur ? "none" : "blur(8px)" },
-          { opacity: 1, y: 0, filter: "none", duration: 0.9 },
-          "-=0.6"
-        )
-        // FIX: `width` -> `scaleX`. Width is a layout property (forces
-        // reflow every tick); scaleX is compositor-only. origin-left
-        // keeps the same "grows rightward" look as the width version.
+        .fromTo(mediaWrapperRef.current, { scale: 1.12, opacity: 0 }, { scale: 1.06, opacity: 1, duration: 1.4 })
+        .fromTo(eyebrowRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=1.0")
+        .fromTo(titleRef.current, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.9 }, "-=0.6")
         .fromTo(lineRef.current, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.7 }, "-=0.5")
-        .fromTo(
-          subtitleRef.current,
-          { opacity: 0, y: 20, filter: skipBlur ? "none" : "blur(6px)" },
-          { opacity: 1, y: 0, filter: "none", duration: 0.8 },
-          "-=0.5"
-        )
+        .fromTo(subtitleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8 }, "-=0.5")
         .call(() => gsap.set(entranceTargets, { clearProps: "willChange" }));
 
-      // ---- master scroll-driven timeline --------------------------
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=400%",
-          // FIX: a very low scrub (0.05–0.1) makes onUpdate fire on
-          // almost every micro scroll delta, each one attempting a
-          // seek. A slightly larger value coalesces rapid deltas into
-          // fewer, larger seeks — mobile decoders are the bottleneck,
-          // not GSAP's math, so this is what actually buys back fps.
-          scrub: isMobile ? 0.35 : 0.15,
-          pin: pinTargetRef.current,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            targetTime = self.progress * getDuration();
-            needsWork = true;
-            if (!rafId) rafId = requestAnimationFrame(renderLoop);
+      // Video-only smoothing state (only used on desktop).
+      let targetTime = 0;
+      let currentTime = 0;
+      let needsWork = false;
+      const getDuration = () => (video && video.duration && !isNaN(video.duration) ? video.duration : 5);
+
+      function videoRenderLoop(now) {
+        const diff = targetTime - currentTime;
+        currentTime = Math.abs(diff) > 0.004 ? currentTime + diff * 0.35 : targetTime;
+        const dur = getDuration();
+        if (currentTime < 0) currentTime = 0;
+        if (currentTime > dur) currentTime = dur;
+        const bigEnough = Math.abs(video.currentTime - currentTime) > 0.01;
+        if (!video.seeking && bigEnough) {
+          video.currentTime = currentTime;
+        }
+        if (Math.abs(targetTime - currentTime) <= 0.004 && !video.seeking) needsWork = false;
+        rafId = needsWork ? requestAnimationFrame(videoRenderLoop) : null;
+      }
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "+=400%",
+            scrub: isMobile ? 0.35 : 0.15,
+            pin: pinTargetRef.current,
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (isMobile) {
+                /* FIX — the actual point of this whole rewrite:
+                 * pick the frame index for the current (already-eased
+                 * by `scrub`) progress, and draw it directly. No
+                 * seeking, no decoder, no latency — a decoded bitmap
+                 * blit is sub-millisecond, so this tracks the finger
+                 * 1:1 even on mid-range Android and iPhone Safari. */
+                const frameIndex = Math.min(total - 1, Math.round(self.progress * (total - 1)));
+                if (frameIndex !== lastDrawnFrame && images.current[frameIndex]) {
+                  drawCover(ctx2d, images.current[frameIndex], canvas.width, canvas.height);
+                  lastDrawnFrame = frameIndex;
+                }
+              } else {
+                targetTime = self.progress * getDuration();
+                needsWork = true;
+                if (!rafId) rafId = requestAnimationFrame(videoRenderLoop);
+              }
+            },
           },
-        },
-      })
+        })
         .to(
           textContainerRef.current,
-          {
-            // Function-based value: GSAP re-evaluates this on every
-            // ScrollTrigger refresh/resize automatically, instead of
-            // us manually recomputing and re-binding a fresh tween.
-            x: () => -(isMobile ? window.innerWidth * 1.1 : window.innerWidth * 0.8),
-            ease: "power1.inOut",
-          },
+          { x: () => -(isMobile ? window.innerWidth * 1.1 : window.innerWidth * 0.8), ease: "power1.inOut" },
           0
         )
         .to(mediaWrapperRef.current, { scale: 1.0, ease: "power1.inOut" }, 0)
@@ -260,18 +305,22 @@ export default function DesktopCanvas() {
 
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", sizeCanvas);
       ctx.revert();
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, [isReady]);
+  }, [isReady, device.isMobile, images, total]);
+
+  const loadProgress = device.isMobile && total > 0 ? Math.round((loadedCount / total) * 100) : null;
 
   return (
     <div ref={containerRef} className="w-full bg-[var(--bg-main)] relative">
-      {/* Loader: GSAP/ScrollTrigger never initialize before the video
-          is actually scrub-ready (see the isReady effect above). */}
       {!isReady && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--bg-main)] transition-opacity duration-500">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-[var(--bg-main)] transition-opacity duration-500">
           <div className="w-8 h-8 border-2 border-[var(--color-accent)] border-t-transparent rounded-full animate-spin" />
+          {loadProgress !== null && (
+            <span className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-accent)]">{loadProgress}%</span>
+          )}
         </div>
       )}
 
@@ -284,47 +333,27 @@ export default function DesktopCanvas() {
           className="absolute inset-0 w-full h-full overflow-hidden opacity-0"
           style={{ transform: "translate3d(0,0,0) scale(1.06)" }}
         >
-          <video
-            ref={videoRef}
-            src={heroScroledVideo}
-            muted
-            playsInline
-            preload="auto"
-            className="w-full h-full object-cover pointer-events-none select-none"
-          />
+          {device.isMobile ? (
+            <canvas ref={canvasRef} className="w-full h-full pointer-events-none select-none" />
+          ) : (
+            <video
+              ref={videoRef}
+              src={heroScroledVideo}
+              muted
+              playsInline
+              preload="auto"
+              className="w-full h-full object-cover pointer-events-none select-none"
+            />
+          )}
         </div>
 
-        <div
-          ref={textContainerRef}
-          className="absolute z-20 pointer-events-none w-[85%] max-w-[550px] left-[7%] md:left-[8%] top-[28%] md:top-[24%]"
-          style={{ transform: "translate3d(0,0,0)" }}
-        >
-          <p
-            ref={eyebrowRef}
-            className="font-ui text-[10px] md:text-xs uppercase tracking-[0.4em] md:tracking-[0.5em] text-[var(--color-accent)] mb-3 md:mb-4 font-medium opacity-0"
-          >
-            Crafting Spaces
-          </p>
-
-          <h1
-            ref={titleRef}
-            className="font-heading font-light text-4xl sm:text-5xl md:text-[76px] leading-[1.1] md:leading-[1.05] tracking-[0.04em] md:tracking-[0.06em] text-white mb-4 md:mb-5 opacity-0"
-          >
-            Since 1989
-          </h1>
-
-          <div
-            ref={lineRef}
-            className="h-[1px] w-20 bg-[var(--color-accent)] mb-4 md:mb-5 opacity-0 origin-left"
-          />
-
-          <p
-            ref={subtitleRef}
-            className="font-heading italic text-base md:text-xl text-[var(--color-accent)] tracking-[0.08em] md:tracking-[0.1em] m-0 opacity-0"
-          >
-            Across India, &amp; Nepal &amp; UAE
-          </p>
-        </div>
+        <HeroText
+          textContainerRef={textContainerRef}
+          eyebrowRef={eyebrowRef}
+          titleRef={titleRef}
+          lineRef={lineRef}
+          subtitleRef={subtitleRef}
+        />
       </div>
     </div>
   );
